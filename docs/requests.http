@@ -1,0 +1,52 @@
+@baseUrl = http://localhost:3000
+@aliceId = 11111111-1111-4111-8111-111111111111
+@bobId = 22222222-2222-4222-8222-222222222222
+@token = paste-access-token-here
+
+### Health
+GET {{baseUrl}}/health
+
+### Create user
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "Eka Hasbi Habibi",
+  "email": "eka@example.com",
+  "password": "Password123!"
+}
+
+### Login as Alice, then copy data.accessToken into @token
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "Password123!"
+}
+
+### Get own user details
+GET {{baseUrl}}/users/{{aliceId}}
+Authorization: Bearer {{token}}
+
+### Get own balance
+GET {{baseUrl}}/users/{{aliceId}}/balance
+Authorization: Bearer {{token}}
+
+### Transfer 10,000 from Alice to Bob
+POST {{baseUrl}}/transfers
+Authorization: Bearer {{token}}
+Idempotency-Key: transfer-demo-0001
+Content-Type: application/json
+
+{
+  "fromUserId": "{{aliceId}}",
+  "toUserId": "{{bobId}}",
+  "amount": 10000
+}
+
+### Repeat the request above with the same key to test idempotency
+
+### Own completed transactions
+GET {{baseUrl}}/transactions?page=1&pageSize=20&status=completed
+Authorization: Bearer {{token}}
